@@ -42,7 +42,7 @@ class DagobahContainer extends React.Component {
   state = { loading: true };
 
   componentDidMount() {
-    fetch("https://swapi.co/api/planets/5/")
+    fetch("https://swapi.co/api/planets/3/")
     .then(res => res.json() )
     .then(
       planet => this.setState({ loading: false, planet: planet }),
@@ -51,7 +51,13 @@ class DagobahContainer extends React.Component {
 }
 
   render() {
-    return <PlanetView {...this.state} />;
+    return (
+      <span>
+      <h1>Container / View Pattern</h1>
+      <PlanetView {...this.state} />
+
+      </span>
+    );
   }
 
 }
