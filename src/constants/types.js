@@ -1,0 +1,2 @@
+export const FETCH_INSTANCES = "FETCH_INSTANCES";
+export const NEW_INSTANCES = "NEW_INSTANCES";

@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import { fetchInstanceAction } from "../actions/fetchInstanceAction";
+import { sleep } from "../libs/helpers";
 
 // A View per state.
 const LoadingView = () => <div>Loading ...</div>;
@@ -7,17 +10,21 @@ const InstancesView = instances => {
   console.log("instances view instances", instances);
   return (
     <ul>
-      <li>a-1</li>
-      <li>b-2</li>
+      {instances.instances.map(instance => {
+        return <li>{instance.instanceId}</li>;
+      })}
     </ul>
   );
 };
 
 const DisplayByState = ({ loading, instances }) => {
+  console.log("loading", loading);
+  console.log("instances", instances);
   if (loading) {
     return <LoadingView />;
   } else if (instances) {
-    return <InstancesView {...instances} />;
+    console.log("DisplayByState instances", instances);
+    return <InstancesView {...{ instances }} />;
   } else {
     return <ErrorView />;
   }
@@ -29,18 +36,34 @@ const DisplayByState = ({ loading, instances }) => {
 // { Loading: false, error: any }
 
 class GetInstancesContainer extends Component {
-  state = { loading: true };
-
-  componentDidMount() {
-    this.setState({
-      loading: false,
-      instances: [{ instanceId: "a-1" }, { instanceId: "a-2" }]
-    });
+  async componentDidMount() {
+    await sleep(3000);
+    this.props.dispatch(fetchInstanceAction());
   }
 
   render() {
-    return <DisplayByState {...this.state} />;
+    console.log("GetInstances render state", this.state);
+    console.log("GetInstances render props", this.props);
+    return <DisplayByState {...this.props} namespace={this.props.namespace} />;
   }
 }
 
-export default GetInstancesContainer;
+const mapStateToProps = (state, ownProps) => {
+  console.log("mapStateToProps state", state);
+  return {
+    loading: state.instancesFetchedReducer.loading,
+    instances: state.instancesFetchedReducer.instances,
+    error: state.instancesFetchedReducer.error
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatch: dispatch
+  };
+};
+
+const GetInstancesConnected = connect(mapStateToProps, mapDispatchToProps)(
+  GetInstancesContainer
+);
+export default GetInstancesConnected;
